@@ -1,0 +1,13 @@
+method: imp
+model: mobilevit
+dataset: cifar10
+hparams:
+  ft_epochs: 3
+  exclude:
+  - first
+  - last
+  rounds: 4
+  rate: 0.4
+  rewind: lr
+  round_epochs: 3
+  from_scratch: false

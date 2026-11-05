@@ -1,0 +1,11 @@
+method: prune_quant
+model: mobilevit
+dataset: cifar10
+hparams:
+  stages:
+  - method: l1_filter
+    hparams:
+      ratio: 0.3
+      ft_epochs: 8
+  - method: ptq_mse
+    hparams: {}

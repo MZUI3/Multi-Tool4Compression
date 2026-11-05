@@ -1,0 +1,12 @@
+method: kmeans_share
+model: mobilevit
+dataset: cifar10
+hparams:
+  ft_epochs: 3
+  w_bits: 8
+  a_bits: 8
+  exclude: []
+  bits: 5
+  iters: 30
+  huffman: true
+  chunk: 1048576

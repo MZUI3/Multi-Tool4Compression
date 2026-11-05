@@ -1,0 +1,7 @@
+method: lsq
+model: mobilevit
+dataset: cifar10
+hparams:
+  w_bits: 2
+  a_bits: 2
+  ft_epochs: 10

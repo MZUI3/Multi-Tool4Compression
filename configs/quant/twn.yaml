@@ -1,0 +1,21 @@
+method: twn
+model: mobilevit
+dataset: cifar10
+hparams:
+  ft_epochs: 15
+  w_bits: 8
+  a_bits: 8
+  exclude:
+  - first
+  - last
+  w_observer: minmax
+  a_observer: minmax
+  w_per_channel: true
+  a_symmetric: false
+  bn_fold: false
+  calib_batches: 8
+  percentile: 99.99
+  quant_attn_probs: false
+  quant_ln_input: false
+  attn_bits: 8
+  q_lr: 0.001

@@ -1,0 +1,5 @@
+method: imp
+model: mobilevit
+dataset: cifar10
+hparams:
+  rewind: weights

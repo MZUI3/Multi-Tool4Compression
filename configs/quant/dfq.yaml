@@ -1,0 +1,25 @@
+method: dfq
+model: mobilevit
+dataset: cifar10
+applies_to:
+- mobilevit
+- resnet18
+- mobilenet_v2
+hparams:
+  ft_epochs: 0
+  w_bits: 8
+  a_bits: 8
+  exclude: []
+  w_observer: minmax
+  a_observer: minmax
+  w_per_channel: true
+  a_symmetric: false
+  bn_fold: true
+  calib_batches: 8
+  percentile: 99.99
+  quant_attn_probs: false
+  quant_ln_input: false
+  attn_bits: 8
+  relu6_to_relu: true
+  cle_iterations: 10
+  bias_correction: true

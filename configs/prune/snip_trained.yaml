@@ -1,0 +1,8 @@
+method: snip
+model: mobilevit
+dataset: cifar10
+hparams:
+  from_scratch: false
+  ft_epochs: 5
+  ft_lr: 0.01
+  ft_warmup_epochs: 0.0

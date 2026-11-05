@@ -1,0 +1,13 @@
+method: gmp
+model: mobilevit
+dataset: cifar10
+hparams:
+  ft_epochs: 10
+  exclude:
+  - first
+  - last
+  sparsity: 0.8
+  scope: global
+  start: 0.0
+  end: 0.7
+  update_every: 50

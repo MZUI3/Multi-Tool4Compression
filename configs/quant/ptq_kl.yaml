@@ -1,0 +1,18 @@
+method: ptq_kl
+model: mobilevit
+dataset: cifar10
+hparams:
+  ft_epochs: 0
+  w_bits: 8
+  a_bits: 8
+  exclude: []
+  w_observer: minmax
+  a_observer: kl
+  w_per_channel: true
+  a_symmetric: true
+  bn_fold: true
+  calib_batches: 8
+  percentile: 99.99
+  quant_attn_probs: false
+  quant_ln_input: false
+  attn_bits: 8

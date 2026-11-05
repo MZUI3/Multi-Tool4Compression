@@ -1,0 +1,11 @@
+method: head_prune
+model: mobilevit
+dataset: cifar10
+applies_to:
+- mobilevit
+- vit_tiny
+hparams:
+  ft_epochs: 5
+  exclude: []
+  ratio: 0.5
+  calib_batches: 8

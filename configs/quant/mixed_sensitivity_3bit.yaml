@@ -1,0 +1,5 @@
+method: mixed_sensitivity
+model: mobilevit
+dataset: cifar10
+hparams:
+  avg_bits: 3.0

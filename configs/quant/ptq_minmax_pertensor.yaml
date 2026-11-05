@@ -1,0 +1,5 @@
+method: ptq_minmax
+model: mobilevit
+dataset: cifar10
+hparams:
+  w_per_channel: false

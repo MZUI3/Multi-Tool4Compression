@@ -1,0 +1,10 @@
+method: pipeline
+model: mobilevit
+dataset: cifar10
+hparams:
+  stages:
+  - method: magnitude
+    hparams:
+      sparsity: 0.5
+  - method: ptq_minmax
+    hparams: {}

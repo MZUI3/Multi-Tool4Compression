@@ -1,0 +1,32 @@
+method: adaround
+model: mobilevit
+dataset: cifar10
+hparams:
+  ft_epochs: 0
+  w_bits: 4
+  a_bits: 8
+  exclude:
+  - first
+  - last
+  w_observer: mse
+  a_observer: minmax
+  w_per_channel: true
+  a_symmetric: false
+  bn_fold: true
+  calib_batches: 8
+  percentile: 99.99
+  quant_attn_probs: false
+  quant_ln_input: false
+  attn_bits: 8
+  iters: 1000
+  batch: 32
+  reg_weight: 0.01
+  b_start: 20.0
+  b_end: 2.0
+  warmup: 0.2
+  lr: 0.001
+  act_lr: 4.0e-05
+  max_layers: 1
+  learn_act: false
+  drop_prob: 0.0
+  fisher: false

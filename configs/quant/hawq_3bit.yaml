@@ -1,0 +1,5 @@
+method: hawq
+model: mobilevit
+dataset: cifar10
+hparams:
+  avg_bits: 3.0

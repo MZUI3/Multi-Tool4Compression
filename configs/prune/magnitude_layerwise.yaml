@@ -1,0 +1,5 @@
+method: magnitude
+model: mobilevit
+dataset: cifar10
+hparams:
+  scope: layer

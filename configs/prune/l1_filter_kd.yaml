@@ -1,0 +1,5 @@
+method: l1_filter
+model: mobilevit
+dataset: cifar10
+hparams:
+  kd_alpha: 0.7

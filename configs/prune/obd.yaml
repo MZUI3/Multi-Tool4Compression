@@ -1,0 +1,11 @@
+method: obd
+model: mobilevit
+dataset: cifar10
+hparams:
+  ft_epochs: 5
+  exclude:
+  - first
+  - last
+  sparsity: 0.5
+  scope: global
+  calib_batches: 8

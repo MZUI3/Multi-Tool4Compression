@@ -1,0 +1,10 @@
+method: ptq_minmax
+model: mobilevit
+dataset: cifar10
+applies_to:
+- mobilevit
+- vit_tiny
+hparams:
+  quant_ln_input: true
+  quant_attn_probs: true
+  attn_bits: 4

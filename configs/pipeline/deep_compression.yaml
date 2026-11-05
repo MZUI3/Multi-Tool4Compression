@@ -1,0 +1,15 @@
+method: deep_compression
+model: mobilevit
+dataset: cifar10
+hparams:
+  stages:
+  - method: gmp
+    hparams:
+      sparsity: 0.8
+      ft_epochs: 8
+      exclude:
+      - first
+  - method: kmeans_share
+    hparams:
+      bits: 5
+      ft_epochs: 3

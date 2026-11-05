@@ -1,0 +1,13 @@
+method: evit
+model: mobilevit
+dataset: cifar10
+applies_to:
+- vit_tiny
+hparams:
+  ft_epochs: 5
+  exclude: []
+  keep_rate: 0.7
+  layers:
+  - 3
+  - 6
+  - 9

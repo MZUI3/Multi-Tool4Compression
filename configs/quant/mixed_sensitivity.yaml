@@ -1,0 +1,24 @@
+method: mixed_sensitivity
+model: mobilevit
+dataset: cifar10
+hparams:
+  ft_epochs: 3
+  w_bits: 8
+  a_bits: 8
+  exclude: []
+  w_observer: mse
+  a_observer: minmax
+  w_per_channel: true
+  a_symmetric: false
+  bn_fold: true
+  calib_batches: 8
+  percentile: 99.99
+  quant_attn_probs: false
+  quant_ln_input: false
+  attn_bits: 8
+  candidates:
+  - 2
+  - 4
+  - 8
+  avg_bits: 4.0
+  score_batches: 4

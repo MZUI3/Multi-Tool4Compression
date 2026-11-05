@@ -1,0 +1,8 @@
+method: layer_drop
+model: mobilevit
+dataset: cifar10
+hparams:
+  ft_epochs: 5
+  exclude: []
+  num_blocks: 2
+  calib_batches: 4

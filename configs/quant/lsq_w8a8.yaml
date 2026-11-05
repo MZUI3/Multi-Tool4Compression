@@ -1,0 +1,7 @@
+method: lsq
+model: mobilevit
+dataset: cifar10
+hparams:
+  w_bits: 8
+  a_bits: 8
+  exclude: []

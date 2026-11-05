@@ -1,0 +1,9 @@
+method: qat_ste
+model: mobilevit
+dataset: cifar10
+hparams:
+  w_bits: 4
+  a_bits: 4
+  exclude:
+  - first
+  - last

@@ -1,0 +1,12 @@
+method: nm_sparsity
+model: mobilevit
+dataset: cifar10
+hparams:
+  ft_epochs: 5
+  exclude:
+  - first
+  - last
+  n: 2
+  m: 4
+  measure_gpu: true
+  gpu_tokens: 8192

@@ -1,0 +1,63 @@
+[
+ {
+  "method": "fpgm",
+  "variant": "fpgm",
+  "kind": "prune",
+  "family": "Structured channel",
+  "paper": "He et al., 2019 (Filter Pruning via Geometric Median)",
+  "model": "mobilevit",
+  "dataset": "cifar10",
+  "seed": 0,
+  "baseline": {
+   "acc": 84.24,
+   "loss": 0.5172039611816406,
+   "params": 440602,
+   "params_nonzero": 440602,
+   "weights": 436272,
+   "weights_nonzero": 436272,
+   "weight_sparsity": 0.0,
+   "size_fp32_bytes": 1768424.0,
+   "size_bytes": 1768424.0,
+   "compression_ratio": 1.0,
+   "macs": 7388288.0,
+   "sparse_macs": 7388288.0,
+   "torch_cpu_latency_ms": 1.3468,
+   "onnx_fp32_latency_ms": 0.2551,
+   "onnx_int8_latency_ms": 0.3167,
+   "onnx_int8_file_bytes": 605374,
+   "onnx_latency_ms": 0.2551,
+   "onnx_int8": false
+  },
+  "final": {
+   "acc": 72.32,
+   "loss": 0.7990722412109375,
+   "params": 145298,
+   "params_nonzero": 145298,
+   "weights": 142744,
+   "weights_nonzero": 142744,
+   "weight_sparsity": 0.0,
+   "size_fp32_bytes": 584200.0,
+   "size_bytes": 584200.0,
+   "compression_ratio": 1.0,
+   "macs": 2498112.0,
+   "sparse_macs": 2498112.0,
+   "torch_cpu_latency_ms": 1.3178,
+   "onnx_fp32_latency_ms": 0.209,
+   "onnx_int8_latency_ms": 0.2816,
+   "onnx_int8_file_bytes": 295353,
+   "onnx_latency_ms": 0.209,
+   "onnx_int8": false
+  },
+  "delta_acc": -11.92,
+  "wall_time_s": 57.3,
+  "hardware": {
+   "python": "3.12.13",
+   "torch": "2.11.0+cu128",
+   "platform": "Windows-11-10.0.26300-SP0",
+   "cpu": "AMD64 Family 25 Model 33 Stepping 0, AuthenticAMD",
+   "gpu": "NVIDIA GeForce RTX 3060",
+   "onnxruntime": "1.31.1"
+  },
+  "run_dir": "runs\\benchmark\\20261106-074939\\fpgm_mobilevit_s0_20261106-074945"
+ }
+]

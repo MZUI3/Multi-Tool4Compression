@@ -1,0 +1,11 @@
+method: snip
+model: mobilevit
+dataset: cifar10
+hparams:
+  ft_epochs: 30
+  exclude:
+  - first
+  - last
+  sparsity: 0.8
+  from_scratch: true
+  score_batches: 8

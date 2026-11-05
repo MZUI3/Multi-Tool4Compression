@@ -1,0 +1,9 @@
+method: tome
+model: mobilevit
+dataset: cifar10
+applies_to:
+- vit_tiny
+hparams:
+  ft_epochs: 0
+  exclude: []
+  r: 8

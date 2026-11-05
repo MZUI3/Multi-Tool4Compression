@@ -1,0 +1,7 @@
+method: tome
+model: mobilevit
+dataset: cifar10
+applies_to:
+- vit_tiny
+hparams:
+  r: 4

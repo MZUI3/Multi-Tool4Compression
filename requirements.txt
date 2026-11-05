@@ -1,0 +1,8 @@
+torch>=2.3.0
+torchvision>=0.18.0
+numpy
+pyyaml
+onnx>=1.16
+onnxruntime>=1.18
+pytest
+matplotlib

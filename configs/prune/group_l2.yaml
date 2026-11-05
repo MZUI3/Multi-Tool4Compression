@@ -1,0 +1,11 @@
+method: group_l2
+model: mobilevit
+dataset: cifar10
+hparams:
+  ft_epochs: 5
+  exclude: []
+  ratio: 0.5
+  scope: uniform
+  max_ratio: 0.9
+  round_to: 1
+  calib_batches: 8

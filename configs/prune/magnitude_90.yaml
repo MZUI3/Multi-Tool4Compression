@@ -1,0 +1,6 @@
+method: magnitude
+model: mobilevit
+dataset: cifar10
+hparams:
+  sparsity: 0.9
+  ft_epochs: 10
