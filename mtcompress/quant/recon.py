@@ -90,11 +90,13 @@ def find_units(model: nn.Module, example: torch.Tensor, max_layers: int) -> List
 def _capture(model, unit, batches, want="input"):
     store = []
 
+    # clone(): an in-place activation right after the unit (ReLU(inplace=True)) would otherwise overwrite
+    # the stored tensor, turning a pre-activation target into a post-activation one.
     def hook(m, args, out):
         if want == "input":
-            store.append(tuple(a.detach() if torch.is_tensor(a) else a for a in args))
+            store.append(tuple(a.detach().clone() if torch.is_tensor(a) else a for a in args))
         else:
-            store.append(out[0].detach() if isinstance(out, tuple) else out.detach())
+            store.append((out[0] if isinstance(out, tuple) else out).detach().clone())
 
     h = unit.register_forward_hook(hook)
     with torch.no_grad():
@@ -198,7 +200,11 @@ class Reconstruct(PTQ):
             err = (out - targets[i][sub]) ** 2
             if grads is not None:
                 err = err * grads[i][sub]
-            return err.flatten(1).sum(1).mean()
+            # Summed over channels, averaged over batch and positions, as in the reference implementation.
+            # Summing over positions too would scale the error by H*W and drown the rounding regulariser,
+            # so h(V) would not reach 0/1 before the rounding is fixed.
+            channel_dim = 1 if err.dim() in (2, 4) else err.dim() - 1
+            return err.sum(channel_dim).mean()
 
         with torch.no_grad():
             first = sum(loss_at(i, slice(None)).item() for i in range(len(inputs))) / len(inputs)

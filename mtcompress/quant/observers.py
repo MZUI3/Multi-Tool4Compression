@@ -121,7 +121,14 @@ class Observer:
 
 
 def kl_threshold(values: np.ndarray, levels: int = 128, bins: int = 2048) -> float:
-    """TensorRT entropy calibration on |x|."""
+    """TensorRT entropy calibration on |x|.
+
+    Exact zeros (half of a ReLU output) are left out: every grid represents them exactly, and as a spike
+    in the first bin they make every wider threshold look worse once that bin is merged with its
+    neighbours, so the search would always return the narrowest range."""
+    values = values[values > 0]
+    if values.size == 0:
+        return 1e-8
     hist, edges = np.histogram(values, bins=bins, range=(0, float(values.max()) + 1e-12))
     hist = hist.astype(np.float64)
     best_kl, best_i = math.inf, bins

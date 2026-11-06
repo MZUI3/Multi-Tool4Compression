@@ -257,7 +257,7 @@ class ThiNet(ChannelPrune):
 
         def make_hook(mod):
             def hook(m, inp):
-                inputs.setdefault(id(mod), []).append(inp[0].detach())
+                inputs.setdefault(id(mod), []).append(inp[0].detach().clone())
             return hook
 
         for mod in mods:

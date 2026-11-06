@@ -4,7 +4,78 @@ English | [한국어](README.ko.md)
 
 A PyTorch toolkit of 48 model-compression methods (22 pruning, 22 quantisation, 4 pipelines), each applied from a YAML config by one script to a trained CIFAR-10 baseline. Every run reports the same cost numbers next to accuracy: parameters and non-zeros, storage bytes, MACs, PyTorch CPU latency and ONNX Runtime CPU latency in fp32 and int8. That way it is clear which compression actually makes a model faster and which only makes it smaller. The models come from [Multi-Tool4Vision](https://github.com/MZUI3/Multi-Tool4Vision), and `mtcompress/common/hwaccel.py` is the same file used in that repository and in [Multi-Tool4RL](https://github.com/MZUI3/Multi-Tool4RL).
 
-<!-- RESULTS -->
+## Results
+
+The setup:
+
+- **Data:** CIFAR-10 at 32×32.
+- **Fine-tuning:** one RTX 3060.
+- **Latency:** an AMD Ryzen 7 5800X at batch 1 with 4 threads, using PyTorch 2.11 and ONNX Runtime 1.31.
+- **Seed:** one (0).
+- **Budget:** most methods fine-tune for 5 epochs, and pruning at initialisation trains from scratch for 30. Absolute numbers are therefore below the papers'. What matters is how the methods compare under the same budget.
+
+The full tables (108 runs) are in [results/mobilevit.md](results/mobilevit.md), [results/resnet18.md](results/resnet18.md) and [results/vit_tiny.md](results/vit_tiny.md). The raw summaries are in the matching `.json` files, and accuracy-vs-cost plots are in `results/*.png`.
+
+| Baseline | Top-1 | Params | fp32 size | MACs | PyTorch CPU | ORT fp32 | ORT int8 |
+|---|---|---|---|---|---|---|---|
+| `resnet18` (30 epochs) | 93.89% | 11.17M | 42.7 MiB | 555.4M | 12.06 ms | 4.99 ms | 2.01 ms |
+| `mobilevit` (60 epochs) | 84.24% | 0.44M | 1.69 MiB | 7.39M | 1.35 ms | 0.255 ms | 0.317 ms |
+| `vit_tiny` (60 epochs) | 83.37% | 5.36M | 20.5 MiB | 365.1M | 9.11 ms | 5.13 ms | 5.55 ms |
+
+**What actually gets faster: ResNet18**
+
+| Method | Top-1 | Size | MACs | ORT fp32 | ORT int8 |
+|---|---|---|---|---|---|
+| baseline | 93.89 | 42.7 MiB | 555M | 4.99 ms | 2.01 ms |
+| `gmp`: 80% unstructured | 93.72 | 9.9 MiB | 555M | 4.73 ms | 1.97 ms |
+| `nm_sparsity`: 2:4 | 93.71 | 22.7 MiB | 555M | 4.98 ms | 2.01 ms |
+| `ptq_mse`: int8 PTQ | 93.88 | 10.7 MiB | 555M | — | **2.00 ms** |
+| `l1_filter_30`: 30% of channels | 93.38 | 21.0 MiB | 275M | 2.99 ms | 1.47 ms |
+| `prune_quant`: 30% channels + int8 PTQ | 93.75 | 5.3 MiB | 275M | — | **1.49 ms** |
+| `slimming`: 50% of channels | 92.53 | 10.7 MiB | 139M | 1.07 ms | **0.60 ms** |
+| `deep_compression`: GMP 80% + 5-bit k-means + Huffman | 93.74 | **2.4 MiB** | 555M | 4.85 ms | 2.06 ms |
+
+- Unstructured and 2:4 sparsity shrink storage but leave dense CPU latency where it was. The 2:4 GPU kernels (cuSPARSELt) are not in the Windows build of PyTorch, so the run records that it could not measure them.
+- Removing channels and quantising to int8 stack. At 50% of channels plus int8, latency drops from 4.99 ms to 0.60 ms (8.3×) for 1.4 points of accuracy.
+- The seven channel criteria land within 0.4 points of each other at 50% (92.18 to 92.53). At this budget, how much is pruned matters more than how channels are ranked.
+
+**Small models behave differently: MobileViT (7.4M MACs)**
+
+- int8 is *slower* than fp32 in ONNX Runtime (0.317 vs 0.255 ms). At this size, quantise/dequantise overhead outweighs the cheaper arithmetic. The same happens on `vit_tiny` (5.55 vs 5.13 ms), where attention matmuls and LayerNorm stay in float.
+- `layer_drop` measured each block's removal on the calibration set and removed **both transformer layers** of the MobileViT block. The result is 83.71% (−0.53) at 3.06M MACs, and ORT latency drops from 0.255 to 0.090 ms. On CIFAR-10, this compact MobileViT gets little from its attention, which is something the per-block measurement reveals and channel pruning does not. Channel pruning to 3.38M MACs (`l1_filter_global`) reaches 79.32%.
+- `head_prune` removes half the heads at 83.97%.
+
+**Unstructured and lottery-ticket pruning (MobileViT)**
+
+- At 50%, `magnitude` (83.96) and `obd` (83.96) tie, and `random` (78.88) is 5 points lower.
+- At 80%, gradual magnitude pruning (`gmp`, 83.68) beats `movement` (64.21) by a wide margin. Movement pruning was designed for fine-tuning to a new task; on the task the network was already trained for, magnitude is the better signal, as the paper itself notes.
+- `imp` reaches 87% sparsity at 82.69 with learning-rate rewinding and 82.99 with weight rewinding.
+- Pruning at initialisation (80%, then 30 epochs from scratch): `snip` scores 79.81, `synflow` 79.77 and `grasp` 77.99, all above `random_init` (72.88). Applied to the trained model instead, SNIP gives 83.72 (`snip_trained`).
+
+**Quantisation**
+
+- int8 PTQ costs at most 0.17 points (ResNet18 93.85 to 93.91, MobileViT 84.07 to 84.28).
+- `dfq` found 8 cross-layer equalisation pairs in ResNet18 and none in MobileViT. MobileViT's SiLU is not positively homogeneous, so equalisation would change the function there.
+- 4-bit weights and 8-bit activations on ResNet18: `ptq_minmax_w4a8` scores 93.61, `adaround` 93.70 and `brecq` 93.79.
+- 4-bit weights and 4-bit activations on ResNet18: `brecq_w4a4` scores 93.34 and `qdrop` 93.50.
+- On MobileViT, W4A4 PTQ collapses: `ptq_mse_w4a4` scores 10.52, `brecq_w4a4` 37.45 and `qdrop` 26.18. QAT holds up (`lsq` W4A4 81.30, `lsq_plus` 82.08). For a 0.44M-parameter network with SiLU and attention, 4-bit activations need training.
+- **Transformers:** with 4-bit attention probabilities and quantised LayerNorm inputs on `vit_tiny`, uniform quantisers score 78.13 (`ptq_minmax_vit_full`). FQ-ViT's power-of-two factor and log2 quantiser score **82.96** at the same places. `ptq4vit` scores 83.28 with 8-bit twin uniform quantisers.
+- Mixed precision on MobileViT: `hawq` averages 3.0 bits per weight at 83.61%, with 183 KiB of storage (9.4×).
+- The lowest bit widths on MobileViT: `twn` (ternary weights) scores 81.96 in 143 KiB, `xnor` 56.07, and `bnn` (binary weights and activations) 45.51.
+
+**Tokens (ViT-tiny)**
+
+`tome` with r = 8 merges tokens down to a third of the MACs (123.5M). Without training it scores 77.89, and after 3 epochs of fine-tuning 81.17. At batch 1 on the CPU, though, it runs slower than the baseline (11.5 ms vs 9.1 ms) because merging is small, irregular work. `evit` keeps 70% of tokens at three layers: 82.10 at 246.9M MACs. Fewer MACs did not translate into lower latency here, which is why every run times the model instead of reporting MACs alone.
+
+## Measurement notes
+
+These five problems came up while building the benchmark. Each one would have produced wrong numbers without an error message.
+
+- **Fake-quant QDQ is not an int8 model.** Exporting the fake-quantised model (Q/DQ on layer inputs only) gave 1.34 ms for MobileViT against 0.26 ms in fp32, because ONNX Runtime fused none of the convolutions. Int8 latency now comes from ONNX Runtime's static QDQ quantisation of the same graph. With it, all 20 ResNet18 convolutions run as `QLinearConv`.
+- **KL calibration and ReLU.** Half of a ReLU output is exactly zero. In the histogram of |x| that spike made every wider threshold look worse, so KL calibration always picked about 1/10 of the range: ResNet18 int8 fell to 32.6%. Zeros are now left out, and the result is 93.91%.
+- **In-place activations and stored targets.** Reconstruction targets stored with `detach()` were overwritten by the `ReLU(inplace=True)` that follows each convolution, so AdaRound fitted pre-activation outputs to post-activation targets. It scored 87.8% on ResNet18, below plain rounding. Storing a `clone()` brings it to 93.70%.
+- **`nn.MultiheadAttention`** exports through a fused kernel that has no ONNX symbol. Converting it to `SplitAttention` first gives the same outputs and exports.
+- **The TorchScript ONNX exporter** corrupts the heap on ToMe's graph and kills the process. ONNX measurement now runs in a child process, so one crash costs one measurement, not the benchmark.
 
 ## Installation
 

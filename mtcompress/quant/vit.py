@@ -42,7 +42,8 @@ def install_ln_quantizers(model: nn.Module, factory) -> int:
     for parent in list(model.modules()):
         for k, child in list(parent._modules.items()):
             if type(child) is nn.LayerNorm:
-                parent._modules[k] = QLayerNorm.from_float(child, factory())
+                device = child.weight.device if child.weight is not None else "cpu"
+                parent._modules[k] = QLayerNorm.from_float(child, factory().to(device))
                 n += 1
     return n
 
@@ -51,7 +52,7 @@ def install_softmax_quantizers(model: nn.Module, factory) -> int:
     n = 0
     for m in model.modules():
         if isinstance(m, SplitAttention):
-            m.softmax_q = factory()
+            m.softmax_q = factory().to(m.qkv.weight.device)
             n += 1
     return n
 
@@ -264,5 +265,5 @@ class PTQ4ViT(PTQ):
         example = next(iter(ctx.data.calib(2)))[0]
         layers = post_gelu_layers(ctx.model, example)
         for layer in layers:
-            layer.aq = TwinUniform(self.hp["a_bits"], "gelu")
+            layer.aq = TwinUniform(self.hp["a_bits"], "gelu").to(layer.weight.device)
         ctx.info["post_gelu_layers"] = len(layers)

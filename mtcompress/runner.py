@@ -24,7 +24,7 @@ from .base import Context
 from .common.hwaccel import AccelConfig, Accelerator, seed_everything
 from .config import ROOT, save_yaml
 from .data import CifarData
-from .measure.profile import (count_macs, onnx_latencies, param_stats, storage_bytes, torch_latency_ms)
+from .measure.profile import (count_macs, param_stats, storage_bytes, torch_latency_ms)
 from .registry import get_method
 
 if ROOT not in sys.path:
@@ -122,7 +122,10 @@ def profile(model: nn.Module, data: CifarData, mcfg: dict, log=print) -> dict:
                 out["onnx_latency_ms"] = None
                 out["onnx_note"] = "bit widths or quantisers without an ONNX Runtime CPU kernel"
             else:
-                lat = onnx_latencies(model, example.cpu(), calib, mcfg["threads"], fp32=not quantized, int8=True)
+                from .measure.onnx_worker import run_isolated
+
+                lat = run_isolated(copy.deepcopy(model), example.cpu(), calib, mcfg["threads"], fp32=not quantized,
+                                   int8=True)
                 lat = {k: round(v, 4) if isinstance(v, float) else v for k, v in lat.items()}
                 out.update(lat)
                 out["onnx_latency_ms"] = lat["onnx_int8_latency_ms"] if quantized else lat["onnx_fp32_latency_ms"]
