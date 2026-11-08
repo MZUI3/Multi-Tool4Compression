@@ -49,7 +49,7 @@ The full tables (108 runs) are in [results/mobilevit.md](results/mobilevit.md), 
 
 - At 50%, `magnitude` (83.96) and `obd` (83.96) tie, and `random` (78.88) is 5 points lower.
 - At 80%, gradual magnitude pruning (`gmp`, 83.68) beats `movement` (64.21) by a wide margin. Movement pruning was designed for fine-tuning to a new task; on the task the network was already trained for, magnitude is the better signal, as the paper itself notes.
-- `imp` reaches 87% sparsity at 82.69 with learning-rate rewinding and 82.99 with weight rewinding.
+- `imp` reaches 86% sparsity at 82.69 with learning-rate rewinding and 82.99 with weight rewinding.
 - Pruning at initialisation (80%, then 30 epochs from scratch): `snip` scores 79.81, `synflow` 79.77 and `grasp` 77.99, all above `random_init` (72.88). Applied to the trained model instead, SNIP gives 83.72 (`snip_trained`).
 
 **Quantisation**

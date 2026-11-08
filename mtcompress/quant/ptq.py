@@ -5,8 +5,6 @@ int8 model runs folded weights; quantising unfolded weights would measure a mode
 """
 import copy
 
-import torch
-
 from ..base import QuantMethod
 from ..nn.attention import convert_attention
 from ..registry import register_method

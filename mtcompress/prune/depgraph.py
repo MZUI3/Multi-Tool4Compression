@@ -127,7 +127,6 @@ class ChannelTracer:
         for (ga, _), (gb, _) in zip(a[1], b[1]):
             ra, rb = self.uf.find(ga), self.uf.find(gb)
             if ra != rb:
-                A, B = self.groups[ra], self.groups[rb]
                 root = self.uf.union(ra, rb)
                 other = rb if root == ra else ra
                 keep, gone = self.groups[root], self.groups[other]

@@ -49,6 +49,8 @@ def main(argv=None):
         print_list(args.kind)
         return
     if args.hparams:
+        if not args.method:
+            p.error("--hparams needs --method NAME")
         spec = get_method(args.method)
         for k, v in spec.cls.default_hparams().items():
             print(f"{k}: {v}")

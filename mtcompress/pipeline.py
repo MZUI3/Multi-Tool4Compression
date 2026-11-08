@@ -4,8 +4,6 @@
 original uncompressed model across all stages. Each stage's results go to ``summary.json`` under
 ``stages``.
 """
-import copy
-
 from .base import Method
 from .registry import get_method, register_method
 

@@ -19,7 +19,7 @@ import traceback
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
 
-from mtcompress.config import CONFIG_DIR, build_config, load_yaml  # noqa: E402
+from mtcompress.config import CONFIG_DIR, build_config  # noqa: E402
 
 
 def config_names(suite):

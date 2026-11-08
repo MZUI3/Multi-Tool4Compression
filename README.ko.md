@@ -49,7 +49,7 @@
 
 - 50%에서 `magnitude`(83.96)와 `obd`(83.96)는 같고, `random`(78.88)은 5%p 낮습니다.
 - 80%에서는 점진적 magnitude pruning(`gmp`, 83.68)이 `movement`(64.21)를 크게 앞섭니다. movement pruning은 다른 태스크로 fine-tuning할 때를 위한 기법이고, 이미 학습한 태스크에서는 magnitude가 더 나은 신호라고 논문도 말합니다.
-- `imp`는 sparsity 87%에서 LR rewinding 82.69, weight rewinding 82.99입니다.
+- `imp`는 sparsity 86%에서 LR rewinding 82.69, weight rewinding 82.99입니다.
 - 초기화 시점 pruning(80%, 처음부터 30 epoch): `snip` 79.81, `synflow` 79.77, `grasp` 77.99로 모두 `random_init`(72.88)보다 높습니다. 같은 SNIP을 학습된 모델에 적용하면 83.72입니다(`snip_trained`).
 
 **양자화**

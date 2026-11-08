@@ -35,7 +35,7 @@ class LSQQuantizer(Quantizer):
 
     def forward(self, x):
         if self.mode == "observe":
-            self.abs_sum += float(x.detach().abs().mean()) * 1
+            self.abs_sum += float(x.detach().abs().mean())
             self.n_seen += 1
         return super().forward(x)
 

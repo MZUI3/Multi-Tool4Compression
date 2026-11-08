@@ -4,7 +4,7 @@
 input and whether that tensor has any other consumer. Folding and equalisation only touch pairs whose
 intermediate tensor has a single consumer.
 """
-from typing import Dict, List, Optional, Tuple
+from typing import List, Tuple
 
 import torch
 import torch.nn as nn

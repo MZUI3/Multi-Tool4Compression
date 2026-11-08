@@ -11,7 +11,7 @@ asymmetric quantisation uses [0, 2^b - 1]. In ``export_mode`` 8-bit uniform quan
 ``torch.fake_quantize_per_*_affine``, which the ONNX exporter turns into QuantizeLinear/DequantizeLinear.
 """
 import contextlib
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict
 
 import torch
 import torch.nn as nn

@@ -7,7 +7,6 @@ comparable with the one-shot methods on a pretrained network.
 import copy
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 
 from ..base import PruneMethod
